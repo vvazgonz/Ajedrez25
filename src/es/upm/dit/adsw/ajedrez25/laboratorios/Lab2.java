@@ -8,14 +8,13 @@ import es.upm.dit.adsw.ajedrez25.modelo.*;
 
 public class Lab2 {
 
-	HashMap<String, List<Partida>> diccionario = new HashMap<String, List<Partida>>();
-	List<String> jugadores;
+	private HashMap<String, List<Partida>> diccionario = new HashMap<String, List<Partida>>();
+	private List<String> jugadores;
 	private static final Logger LOGGER = Logger.getLogger(LectorPartidas.class.getName());
 	
 	public Lab2 (LectorPartidas lp) {
 		
 		for (Partida p : lp.getPartidas()) {
-			for (int i = 0; i <2; i++) {
 				if (!diccionario.containsKey(p.getJugadorBlancas())) {
 					diccionario.put(p.getJugadorBlancas(), new ArrayList<Partida>());
 				}
@@ -29,18 +28,20 @@ public class Lab2 {
 				pn.add(p);
 				diccionario.replace(p.getJugadorBlancas(), pb);
 				diccionario.replace(p.getJugadorNegras(), pn);
-			}
 		}
-		jugadores = new ArrayList<>(diccionario.keySet());
 		
+		jugadores = new ArrayList<>(diccionario.keySet());
 		Collections.sort(jugadores, comparadorPartidasGanadas);
+		
+		
 	}
 	
 	private static boolean jugadorHaGanado(String jugador, Partida partida) {
 		if (partida.getTurnos().size() % 2 == 0) {
-			return jugador == partida.getJugadorNegras();
+			return jugador.equals(partida.getJugadorBlancas());
+			
 		} else {
-			return jugador == partida.getJugadorBlancas();
+			return jugador.equals(partida.getJugadorNegras());
 		}
 	}
 	
@@ -61,15 +62,14 @@ public class Lab2 {
 						gp2++;
 					}
 			}
-			return gp1 - gp2;
+			return gp1-gp2;
 		}
 	};
 	
 	private void pintarRanking(int top) {
-		System.out.println("╔═════════════════╦══════════╦═══════════╗");
-		System.out.println("║ Nombre          ║ Partidas ║ Victorias ║");
-		System.out.println("╠═════════════════╬══════════╬═══════════╣");
-		for (int i = jugadores.size()-1; i >= jugadores.size() -1 -top; i--) {
+		String s = "╔═════════════════════════╦══════════╦═══════════╗ \n║"+String.format("%-25s","Nombre") + "║ Partidas ║ Victorias ║\n╠═════════════════════════╬══════════╬═══════════╣";
+		
+		for (int i = jugadores.size()-1; i >= 0; i--) {
 			List<Partida> ps = diccionario.get(jugadores.get(i)); 
 			int npartidas = ps.size();
 			float npartidasganadas = 0;
@@ -79,17 +79,21 @@ public class Lab2 {
 					npartidasganadas ++;
 				}
 			}
-			float porcentaje = npartidasganadas/npartidas * 100;
-			System.out.println("║"+jugadores.get(i)+"║" + npartidasganadas + "║" + porcentaje + "%"+ "║");
+			if (jugadores.size() -1  -i < top) {
+				float porcentaje = npartidasganadas/npartidas * 100;
+				s+=("\n║"+String.format("%-25s", jugadores.get(i))+"║" + String.format("%-10s", npartidas) + "║" +String.format("%-10s", String.format("%.2f", porcentaje))  + "%"+ "║");
+			}
+			
 			//String.format("%-10s", jugadores.size());
 		}
-		System.out.println("╚═════════════════╩══════════╩═══════════╝");
+		System.out.println(s+"\n╚═════════════════════════╩══════════╩═══════════╝");
 	}
 	
 	public static void main(String[] args) throws Exception {
 		LectorPartidas lector = new LectorPartidas("data/partidas.txt");
 		Lab2 lab2 = new Lab2(lector);
 		lab2.pintarRanking(10);
+		
 	}
 	
 }
