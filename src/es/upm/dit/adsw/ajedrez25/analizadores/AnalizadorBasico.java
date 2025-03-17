@@ -18,13 +18,19 @@ public class AnalizadorBasico {
 	List<Tablero> tableros = new ArrayList<Tablero>();
 	Map<String, List<Partida>> jugadoresPartida = new HashMap<String, List<Partida>>();
 	List<String> jugadores;
+	Map<Tablero, Integer> TablerosRep = new HashMap<>();
 	
 	public AnalizadorBasico (List<Partida> partidas) {
 		this.jugadoresPartida = new HashMap<>();
 		this.partidas = partidas;
+		
 		for (Partida p: partidas) {
 			for (Tablero t : p.getTurnos()) {
 					tableros.add(t);
+					if (!TablerosRep.containsKey(t)) 
+						TablerosRep.put(t, 1);
+					else 
+						TablerosRep.replace(t, TablerosRep.get(t)+1);
 			}
 			if (jugadoresPartida.containsKey(p.getJugadorBlancas())) {
 	            jugadoresPartida.get(p.getJugadorBlancas()).add(p);
@@ -139,10 +145,13 @@ public class AnalizadorBasico {
 	
 	public int getPartidasGanadasPor(String jugador) {
 		int contador = 0;
-		for (Partida p : jugadoresPartida.get(jugador)) {
-			if (jugadorHaGanado(jugador, p)) 
-				contador++;
+		if (jugadoresPartida.containsKey(jugador)) {
+			for (Partida p : jugadoresPartida.get(jugador)) {
+				if (jugadorHaGanado(jugador, p)) 
+					contador++;
+			}
 		}
+		
 		return contador;
 	}
 	
@@ -175,7 +184,7 @@ public class AnalizadorBasico {
 	}
 	
 	public Map<Tablero, Integer> getRepeticionesTablero() {
-		return new HashMap<Tablero, Integer>();
+		return TablerosRep;
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -192,6 +201,8 @@ public class AnalizadorBasico {
 	    LOGGER.info("Puntuación mediana: " + basico.getPuntuacionMediana());
 	    LOGGER.info("Partidas ganadas por TrialB: " + basico.getPartidasGanadasPor("TrialB"));
 	    LOGGER.info("Mejor jugador: " + basico.getMejorJugador() + " con " + basico.getPartidasGanadasPor(basico.getMejorJugador()) + " victorias");
+	    Tablero b = new Tablero("rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR");
+	    LOGGER.info("El tablero básico aparece: " + basico.getRepeticionesTablero().get(b) + " veces");
 	    
 	}
 }

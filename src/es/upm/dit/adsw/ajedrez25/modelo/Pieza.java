@@ -1,5 +1,7 @@
 package es.upm.dit.adsw.ajedrez25.modelo;
 
+import java.util.Objects;
+
 /**
  * Esta clase representa una pieza de ajedrez. Contiene información sobre el
  * tipo de pieza y el bando al que pertenece.
@@ -108,6 +110,12 @@ public class Pieza {
 	 * @param obj el objeto con el que se compara
 	 * @return true si la pieza es igual al objeto especificado; false en caso contrario
 	 */
+	
+	@Override
+	public int hashCode() {
+	    return Objects.hash(this.tipo, this.bando);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

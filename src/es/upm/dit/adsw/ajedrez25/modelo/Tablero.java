@@ -1,5 +1,7 @@
 package es.upm.dit.adsw.ajedrez25.modelo;
 
+import java.util.Arrays;
+
 /**
  * Esta clase representa un tablero de ajedrez. Contiene información sobre las
  * piezas y el estado del tablero.
@@ -114,7 +116,24 @@ public class Tablero implements Comparable {
     }
 
 
-    /**
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(matrizPiezas);
+    }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
+		Tablero other = (Tablero) obj;
+		return Arrays.deepEquals(matrizPiezas, other.matrizPiezas);
+	}
+
+	/**
      * Verifica si el tablero contiene una pieza específica.
      * 
      * @param pieza la pieza que se busca
