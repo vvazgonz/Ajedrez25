@@ -103,7 +103,7 @@ public class AnalizadorBasico {
 	}
 	
 	public int getPuntuacionMediana( ) {
-		int mediana = tableros.size()/2;
+		int mediana = (tableros.size()-1)/2;
 		if (mediana % 2 == 0) {
 			return tableros.get(mediana).getPuntuacionGeneral();
 		}
@@ -130,14 +130,13 @@ public class AnalizadorBasico {
 	}
 	
 	public static void main(String[] args) throws Exception {
-	    LectorPartidas lector = new LectorPartidas("data/puntuacion.txt");
+	    LectorPartidas lector = new LectorPartidas("data/partidas.txt");
 	    long t = System.currentTimeMillis();
 	    AnalizadorBasico basico = new AnalizadorBasico(lector.getPartidas());
 	    LOGGER.info("Tiempo de análisis: " + (System.currentTimeMillis() - t) + " ms");
-	    LOGGER.info("hola "+ basico.buscarTablerosPorPuntuacion(+5));
-	    //LOGGER.info("El mayor tablero es: "  + 	basico.getMayorTablero() + "con una puntuación de " + basico.getMayorTablero().getPuntuacionGeneral());
+	    LOGGER.info("El mayor tablero es: "  + 	basico.getMayorTablero() + "con una puntuación de " + basico.getMayorTablero().getPuntuacionGeneral());
 	    LOGGER.info("Número de turnos de la partida más corta: " + basico.getNTurnosPartidaMasCorta());
-	    //LOGGER.info("Puntuación mediana: " + basico.getPuntuacionMediana());
+	    LOGGER.info("Puntuación mediana: " + basico.getPuntuacionMediana());
 	    //LOGGER.info("Partidas ganadas por mahdii: " + basico.getPartidasGanadasPor("TrialB"));
 	    //LOGGER.info("Mejor jugador: " + basico.getMejorJugador() + " con " + basico.getPartidasGanadasPor(basico.getMejorJugador()) + " victorias");
 	}
