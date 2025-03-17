@@ -33,9 +33,15 @@ public class AnalizadorBasico {
 	            partidasJugador.add(p);
 	            jugadoresPartida.put(p.getJugadorBlancas(), partidasJugador);
 	        }
+			if (jugadoresPartida.containsKey(p.getJugadorNegras())) {
+	            jugadoresPartida.get(p.getJugadorNegras()).add(p);
+	        } else {
+	            List<Partida> partidasJugador = new ArrayList<>();
+	            partidasJugador.add(p);
+	            jugadoresPartida.put(p.getJugadorNegras(), partidasJugador);
+	        }
 		}
 		jugadores = new ArrayList<>(jugadoresPartida.keySet());
-		ordenarTableros();
 	}
 	
 	public List<Partida> getPartidas() {
@@ -46,9 +52,6 @@ public class AnalizadorBasico {
 		return tableros;
 	}
 	
-	public void ordenarTableros() {
-		ordenarTableros(tableros);
-	}
 	private  void ordenarTableros(List<Tablero> list) {
 		 if (list.size() < 2)
 		 return;
@@ -125,8 +128,23 @@ public class AnalizadorBasico {
 		return min;
 	}
 	
+	private static boolean jugadorHaGanado(String jugador, Partida partida) {
+		if (partida.getTurnos().size() % 2 == 0) {
+			return jugador.equals(partida.getJugadorBlancas());
+			
+		} else {
+			return jugador.equals(partida.getJugadorNegras());
+		}
+	}
+	
 	public int getPartidasGanadasPor(String jugador) {
-		return -1;
+		int contador = 0;
+		System.out.println("Hay: " + jugadoresPartida.get(jugador).size() + "partidas");
+		for (Partida p : jugadoresPartida.get(jugador)) {
+			if (jugadorHaGanado(jugador, p)) 
+				contador++;
+		}
+		return contador;
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -134,10 +152,14 @@ public class AnalizadorBasico {
 	    long t = System.currentTimeMillis();
 	    AnalizadorBasico basico = new AnalizadorBasico(lector.getPartidas());
 	    LOGGER.info("Tiempo de análisis: " + (System.currentTimeMillis() - t) + " ms");
+	    LOGGER.info("Ordenando la lista de tableros...");
+	    t = System.currentTimeMillis();
+	    basico.ordenarTableros(basico.tableros);
+	    LOGGER.info("Tiempo de ordenación: " + (t - System.currentTimeMillis()));
 	    LOGGER.info("El mayor tablero es: "  + 	basico.getMayorTablero() + "con una puntuación de " + basico.getMayorTablero().getPuntuacionGeneral());
 	    LOGGER.info("Número de turnos de la partida más corta: " + basico.getNTurnosPartidaMasCorta());
 	    LOGGER.info("Puntuación mediana: " + basico.getPuntuacionMediana());
-	    //LOGGER.info("Partidas ganadas por mahdii: " + basico.getPartidasGanadasPor("TrialB"));
+	    LOGGER.info("Partidas ganadas por TrialB: " + basico.getPartidasGanadasPor("TrialB"));
 	    //LOGGER.info("Mejor jugador: " + basico.getMejorJugador() + " con " + basico.getPartidasGanadasPor(basico.getMejorJugador()) + " victorias");
 	}
 }
