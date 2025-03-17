@@ -139,12 +139,43 @@ public class AnalizadorBasico {
 	
 	public int getPartidasGanadasPor(String jugador) {
 		int contador = 0;
-		System.out.println("Hay: " + jugadoresPartida.get(jugador).size() + "partidas");
 		for (Partida p : jugadoresPartida.get(jugador)) {
 			if (jugadorHaGanado(jugador, p)) 
 				contador++;
 		}
 		return contador;
+	}
+	
+	public String getMejorJugador() {
+		String ret = jugadores.get(0);
+		for (String s : jugadores) {
+			if (getPartidasGanadasPor(s) > getPartidasGanadasPor(ret))
+				ret = s;
+		}
+		return ret;
+	}
+	
+	public Tablero getTableroPorPuntuacion(int puntuacion) {
+		int inicio = 0;
+		int fin = tableros.size();
+		
+		while (inicio < fin) {
+			int medio = (inicio + fin)/2;
+			Tablero t = tableros.get(medio);
+			
+			if (t.getPuntuacionGeneral() == puntuacion)
+				return t;
+			else if (t.getPuntuacionGeneral() > puntuacion) {
+				fin = medio -1;
+			} else if (t.getPuntuacionGeneral() < puntuacion)
+				inicio = medio +1;
+				
+		}
+		return tableros.get(inicio);
+	}
+	
+	public Map<Tablero, Integer> getRepeticionesTablero() {
+		return new HashMap<Tablero, Integer>();
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -160,6 +191,7 @@ public class AnalizadorBasico {
 	    LOGGER.info("Número de turnos de la partida más corta: " + basico.getNTurnosPartidaMasCorta());
 	    LOGGER.info("Puntuación mediana: " + basico.getPuntuacionMediana());
 	    LOGGER.info("Partidas ganadas por TrialB: " + basico.getPartidasGanadasPor("TrialB"));
-	    //LOGGER.info("Mejor jugador: " + basico.getMejorJugador() + " con " + basico.getPartidasGanadasPor(basico.getMejorJugador()) + " victorias");
+	    LOGGER.info("Mejor jugador: " + basico.getMejorJugador() + " con " + basico.getPartidasGanadasPor(basico.getMejorJugador()) + " victorias");
+	    
 	}
 }
