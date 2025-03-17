@@ -26,8 +26,8 @@ public class Lab2 {
 				List<Partida> pn = diccionario.get(p.getJugadorNegras());
 				pb.add(p);
 				pn.add(p);
-				diccionario.replace(p.getJugadorBlancas(), pb);
-				diccionario.replace(p.getJugadorNegras(), pn);
+				diccionario.get(p.getJugadorBlancas()).add(p);
+				diccionario.get(p.getJugadorNegras()).add(p);
 		}
 		
 		jugadores = new ArrayList<>(diccionario.keySet());
