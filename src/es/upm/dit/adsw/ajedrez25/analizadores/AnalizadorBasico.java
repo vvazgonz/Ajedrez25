@@ -187,6 +187,97 @@ public class AnalizadorBasico {
 		return TablerosRep;
 	}
 	
+	/**
+	 * Obtiene los N tableros que más veces aparecen en todas las partidas analizadas.
+	 *
+	 * @param n Número de tableros más frecuentes a obtener.
+	 * @return Lista con los N tableros más frecuentes.
+	 */
+	public List<Tablero> getNTablerosMasFrecuentes(int n) {
+		return null;
+	}
+
+	/**
+	 * Determina si un jugador ha jugado en una posición específica en alguna de sus partidas.
+	 *
+	 * @param jugador Nombre del jugador.
+	 * @param tablero Tablero a comprobar.
+	 * @return {@code true} si el jugador ha jugado en esa posición, {@code false} en caso contrario.
+	 */
+	
+	public boolean jugadorHaJugadoTablero(String jugador, Tablero tablero) {
+		for (Partida p : jugadoresPartida.get(jugador)) {
+			for (Tablero t: p.getTurnos()) {
+				if (t.equals(tablero))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Calcula el número medio de victorias por jugador.
+	 *
+	 * @return Un mapa donde la clave es el nombre del jugador y el valor es su número medio de victorias.
+	 */
+	//public Map<String, Double> getMediaVictoriasPorJugador();
+
+	/**
+	 * Obtiene el número de partidas que han finalizado con una pieza específica presente en el tablero final.
+	 *
+	 * @param pieza Pieza a comprobar .
+	 * @return Número de partidas donde la pieza estaba presente al finalizar.
+	 */
+	public int getPartidasFinalizadasConPieza(Pieza pieza) {
+		int c = 0;
+		if (pieza != null) {
+			for (Partida p: partidas) {
+				if (p.getTurnos().get(p.getTurnos().size()-1).contienePieza(pieza))
+					c++;
+			}
+		}
+		return c;
+	}
+
+	/**
+	 * Obtiene el número de tableros que tienen exactamente una puntuación determinada.
+	 *
+	 * @param puntuacion Puntuación exacta que se desea buscar.
+	 * @return Cantidad de tableros con dicha puntuación.
+	 */
+	public int getNumeroTablerosConPuntuacion(int puntuacion) {
+		int c = 0;
+		for (Tablero t : tableros) {
+			if (t.getPuntuacionGeneral() == puntuacion)
+				c++;
+		}
+		return c;
+	}
+	
+
+	/**
+	 * Obtiene una lista de los jugadores que nunca han perdido una partida.
+	 *
+	 * @return Lista de nombres de jugadores invictos.
+	 */
+	public List<String> getJugadoresInvictos() {
+		List<String> res = new ArrayList<>();
+		for (String s : jugadores) {
+			if (getPartidasGanadasPor(s) == jugadoresPartida.get(s).size())
+				res.add(s);
+		}
+		return res;
+	}
+
+	/**
+	 * Obtiene el número total de jugadas realizadas en todas las partidas analizadas.
+	 *
+	 * @return Número total de movimientos jugados.
+	 */
+	public int getTotalJugadasRealizadas() {
+		return tableros.size() - partidas.size();
+	}
+	
 	public static void main(String[] args) throws Exception {
 	    LectorPartidas lector = new LectorPartidas("data/partidas.txt");
 	    long t = System.currentTimeMillis();
