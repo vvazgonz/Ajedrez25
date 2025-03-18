@@ -19,6 +19,7 @@ public class AnalizadorBasico {
 	Map<String, List<Partida>> jugadoresPartida = new HashMap<String, List<Partida>>();
 	List<String> jugadores;
 	Map<Tablero, Integer> TablerosRep = new HashMap<>();
+	List<Tablero> TablerosFrecuencia;
 	
 	public AnalizadorBasico (List<Partida> partidas) {
 		this.jugadoresPartida = new HashMap<>();
@@ -48,6 +49,9 @@ public class AnalizadorBasico {
 	        }
 		}
 		jugadores = new ArrayList<>(jugadoresPartida.keySet());
+		TablerosFrecuencia = new ArrayList<>(TablerosRep.keySet());
+		Collections.sort(TablerosFrecuencia, comparadorTablerosFrecuencia);
+		
 	}
 	
 	public List<Partida> getPartidas() {
@@ -187,14 +191,51 @@ public class AnalizadorBasico {
 		return TablerosRep;
 	}
 	
+	
+	Comparator<Tablero> comparadorTablerosFrecuencia = new Comparator<Tablero>() {
+		@Override
+		public int compare(Tablero t1, Tablero t2) {
+			int i1 = TablerosRep.get(t1);
+			int i2 = TablerosRep.get(t2);
+			return i1-i2;
+		}
+	};
+	
 	/**
 	 * Obtiene los N tableros que más veces aparecen en todas las partidas analizadas.
 	 *
 	 * @param n Número de tableros más frecuentes a obtener.
 	 * @return Lista con los N tableros más frecuentes.
 	 */
-	public List<Tablero> getNTablerosMasFrecuentes(int n) {
-		return null;
+	public void getNTablerosMasFrecuentes(int n) {
+		String p = "";
+		int o = 0;
+		while (o < 64) {
+			p += "═";
+			o++;
+		}
+		String s = "╔"+ p + "╦╦═════════════╗ \n║"+String.format("%-64s","Tablero") + "║║ Apariciones ║\n╠" + p +"╬╬═════════════╣";
+		
+		for (int i = TablerosFrecuencia.size()-1; i >= TablerosFrecuencia.size() -1 -n; i--) {
+			int f = TablerosRep.get(TablerosFrecuencia.get(i)); 
+			s+=("\n║"+String.format("%-64s", TablerosFrecuencia.get(i))+"║" + "║" +String.format("%-13s", f)  + "║");
+			}
+			
+			//String.format("%-10s", jugadores.size());
+		System.out.println(s+"\n╚"+ p + "╩╩═════════════╝");
+	}
+		/*
+		 * List<Tablero> ret = new ArrayList<>();
+		 * 
+		 * 
+		 * if (TablerosFrecuencia != null ) { if (n > TablerosFrecuencia.size()) {
+		 * return ret; } for (int i = TablerosFrecuencia.size() -1; i >
+		 * TablerosFrecuencia.size() -1 -n; i--) { ret.add(TablerosFrecuencia.get(i)); }
+		 * } else { for (int i = 0; i <n; i++) { ret.add(null); } }
+		 * 
+		 * return ret;
+		 *
+		 *
 	}
 
 	/**
@@ -294,6 +335,7 @@ public class AnalizadorBasico {
 	    LOGGER.info("Mejor jugador: " + basico.getMejorJugador() + " con " + basico.getPartidasGanadasPor(basico.getMejorJugador()) + " victorias");
 	    Tablero b = new Tablero("rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR");
 	    LOGGER.info("El tablero básico aparece: " + basico.getRepeticionesTablero().get(b) + " veces");
-	    
+	    LOGGER.info("Los tableros más frecuentes son:");
+	    basico.getNTablerosMasFrecuentes(10);
 	}
 }
