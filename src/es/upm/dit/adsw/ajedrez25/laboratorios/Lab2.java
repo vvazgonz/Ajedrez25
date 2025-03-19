@@ -22,10 +22,6 @@ public class Lab2 {
 					diccionario.put(p.getJugadorNegras(), new ArrayList<Partida>());
 				}
 				
-				List<Partida> pb = diccionario.get(p.getJugadorBlancas());
-				List<Partida> pn = diccionario.get(p.getJugadorNegras());
-				pb.add(p);
-				pn.add(p);
 				diccionario.get(p.getJugadorBlancas()).add(p);
 				diccionario.get(p.getJugadorNegras()).add(p);
 		}
