@@ -77,7 +77,7 @@ public class AnalizadorBasico {
 		 while (left.size() > 0 && right.size() > 0) {
 		 Tablero sl = left.get(0);
 		 Tablero sr = right.get(0);
-		 if (sl.compareTo(sr) < 0)
+		 if (sl.compareTo(sr) <= 0)
 		 list.add(left.remove(0));
 		 else
 		 list.add(right.remove(0));
