@@ -51,7 +51,8 @@ public class AnalizadorBasico {
 		jugadores = new ArrayList<>(jugadoresPartida.keySet());
 		TablerosFrecuencia = new ArrayList<>(TablerosRep.keySet());
 		Collections.sort(TablerosFrecuencia, comparadorTablerosFrecuencia);
-		
+		this.ordenarTableros(this.tableros);
+	    
 	}
 	
 	public List<Partida> getPartidas() {
@@ -62,7 +63,7 @@ public class AnalizadorBasico {
 		return tableros;
 	}
 	
-	private  void ordenarTableros(List<Tablero> list) {
+	public void ordenarTableros(List<Tablero> list) {
 		 if (list.size() < 2)
 		 return;
 		 int m = list.size() / 2;
@@ -324,10 +325,6 @@ public class AnalizadorBasico {
 	    long t = System.currentTimeMillis();
 	    AnalizadorBasico basico = new AnalizadorBasico(lector.getPartidas());
 	    LOGGER.info("Tiempo de análisis: " + (System.currentTimeMillis() - t) + " ms");
-	    LOGGER.info("Ordenando la lista de tableros...");
-	    t = System.currentTimeMillis();
-	    basico.ordenarTableros(basico.tableros);
-	    LOGGER.info("Tiempo de ordenación: " + (t - System.currentTimeMillis()));
 	    LOGGER.info("El mayor tablero es: "  + 	basico.getMayorTablero() + "con una puntuación de " + basico.getMayorTablero().getPuntuacionGeneral());
 	    LOGGER.info("Número de turnos de la partida más corta: " + basico.getNTurnosPartidaMasCorta());
 	    LOGGER.info("Puntuación mediana: " + basico.getPuntuacionMediana());
