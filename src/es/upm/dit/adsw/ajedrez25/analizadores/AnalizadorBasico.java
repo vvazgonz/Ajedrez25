@@ -20,6 +20,7 @@ public class AnalizadorBasico {
 	List<String> jugadores;
 	Map<Tablero, Integer> TablerosRep = new HashMap<>();
 	List<Tablero> TablerosFrecuencia;
+	Map<String, Integer> jugadoresMinTurnos = new HashMap<>();
 	
 	public AnalizadorBasico (List<Partida> partidas) {
 		this.jugadoresPartida = new HashMap<>();
@@ -47,7 +48,22 @@ public class AnalizadorBasico {
 	            partidasJugador.add(p);
 	            jugadoresPartida.put(p.getJugadorNegras(), partidasJugador);
 	        }
+			
+			if (jugadoresMinTurnos.containsKey(p.getJugadorBlancas())) {
+				if (p.getTurnos().size() < jugadoresMinTurnos.get(p.getJugadorBlancas()))
+					jugadoresMinTurnos.replace(p.getJugadorBlancas(), p.getTurnos().size());
+				
+			} else
+				jugadoresMinTurnos.put(p.getJugadorBlancas(), p.getTurnos().size());
+			
+			if (jugadoresMinTurnos.containsKey(p.getJugadorNegras())) {
+				if (p.getTurnos().size() < jugadoresMinTurnos.get(p.getJugadorNegras()))
+					jugadoresMinTurnos.replace(p.getJugadorNegras(), p.getTurnos().size());
+				
+			} else
+				jugadoresMinTurnos.put(p.getJugadorNegras(), p.getTurnos().size());
 		}
+		
 		jugadores = new ArrayList<>(jugadoresPartida.keySet());
 		TablerosFrecuencia = new ArrayList<>(TablerosRep.keySet());
 		Collections.sort(TablerosFrecuencia, comparadorTablerosFrecuencia);
@@ -129,14 +145,18 @@ public class AnalizadorBasico {
 	}
 	
 	public int getNTurnosPartidaMasCorta() {
-		int min = Integer.MAX_VALUE;
-		for (Partida p : partidas) {
-			int nturnos = p.getTurnos().size();
-			if (nturnos < min) {
-				min = nturnos;
+		int min = jugadoresMinTurnos.get(jugadores.get(0));
+		for (String s: jugadores) {
+			if (min > jugadoresMinTurnos.get(s)) {
+				min = jugadoresMinTurnos.get(s);
 			}
 		}
 		return min;
+		
+		/*
+		 * int min = Integer.MAX_VALUE; for (Partida p : partidas) { int nturnos =
+		 * p.getTurnos().size(); if (nturnos < min) { min = nturnos; } } return min;
+		 */
 	}
 	
 	private static boolean jugadorHaGanado(String jugador, Partida partida) {
