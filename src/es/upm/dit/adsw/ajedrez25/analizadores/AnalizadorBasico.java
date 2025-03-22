@@ -13,7 +13,7 @@ import es.upm.dit.adsw.ajedrez25.modelo.*;
  */
 public class AnalizadorBasico {
 
-	private static final Logger LOGGER = Logger.getLogger(LectorPartidas.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(AnalizadorBasico.class.getName());
 	List<Partida> partidas;
 	List<Tablero> tableros = new ArrayList<Tablero>();
 	Map<String, List<Partida>> jugadoresPartida = new HashMap<String, List<Partida>>();
