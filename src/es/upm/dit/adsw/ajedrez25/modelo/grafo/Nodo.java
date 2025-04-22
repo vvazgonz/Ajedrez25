@@ -3,6 +3,7 @@ package es.upm.dit.adsw.ajedrez25.modelo.grafo;
 import es.upm.dit.adsw.ajedrez25.modelo.Tablero;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Nodo {
@@ -76,4 +77,29 @@ public class Nodo {
         }
         return gradoSalidaPonderado;
     }
+
+	@Override
+	public String toString() {
+		return "Nodo [tablero=" + tablero +"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(tablero);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Nodo other = (Nodo) obj;
+		return Objects.equals(tablero, other.tablero);
+	}
+    
+	
+    
 }
