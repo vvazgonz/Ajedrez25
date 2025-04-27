@@ -42,7 +42,7 @@ public class Enlace {
         }
     }
     public String toString() {
-        return origen + " -> " + destino + " (" + peso + ")";
+        return origen + " --"+ peso + "-> " + destino ;
     }
     public void incrementarPeso() {
         peso++;

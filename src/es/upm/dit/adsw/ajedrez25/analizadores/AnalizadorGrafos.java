@@ -1,5 +1,9 @@
 package es.upm.dit.adsw.ajedrez25.analizadores;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -13,6 +17,7 @@ public class AnalizadorGrafos {
 		Map<Tablero, Nodo> nodos = new HashMap<>();
 		Set<Enlace> enlaces = new HashSet<Enlace>();
 		private int nNodos, nAristas = 0;
+		private PrintWriter logWriter;
 		
 		
 		
@@ -20,28 +25,29 @@ public class AnalizadorGrafos {
 		 * @param partidas
 		 */
 		public AnalizadorGrafos(List<Partida> partidas) {
-			int nPar = 0;
-			int nMov = 0;
 			for (Partida p : partidas) {
 				List<Tablero> tableros = p.getTurnos();
 				for (int i = 0; i < tableros.size()-1; i ++) {
 					Tablero t1 = tableros.get(i);
 					Tablero t2 = tableros.get(i+1);
 					
-					if (!nodos.containsKey(t1))
-						nodos.put(t1,new Nodo(tableros.get(i)));
-					if (!nodos.containsKey(t2))
-						nodos.put(t2, new Nodo(tableros.get(i+1)));
-					
+					if (!nodos.containsKey(t1)) {
+						Nodo n = new Nodo(t1);
+						nodos.put(t1, n);
+					}
+						
+					if (!nodos.containsKey(t2)) {
+						Nodo n = new Nodo(t2);
+						nodos.put(t2, n);
+					}
+						
 					Nodo n1 = nodos.get(t1);
 					Nodo n2 = nodos.get(t2);
 					
 					Enlace e1 = n1.addEnlaceA(n2);
 		            n2.addEnlaceA(n1);
 		            enlaces.add(e1);
-		            nMov++;
 				}
-				nPar++;
 			}
 			nNodos = nodos.size();
 			nAristas = enlaces.size();
@@ -62,33 +68,66 @@ public class AnalizadorGrafos {
 			return max;
 		}
 		
+		/*
+		 * public List<Nodo> NodosCaminoMasCorto(Nodo n1, Nodo n2) { Map<Nodo, Integer>
+		 * distancias = new HashMap<>(); Map<Nodo, List<Nodo>> predecesores = new
+		 * HashMap<>(); Set<Nodo> visitados = new HashSet<>();
+		 * 
+		 * distancias.put(n1, 0); List<Nodo> pred0 = new ArrayList<>(); pred0.add(n1);
+		 * predecesores.put(n1, pred0);
+		 * 
+		 * 
+		 * recorrer(distancias, predecesores, visitados, n1, 0); return
+		 * predecesores.get(n2); }
+		 * 
+		 * private void recorrer(Map<Nodo, Integer> distancias, Map<Nodo, List<Nodo>>
+		 * predecesores, Set<Nodo> visitados, Nodo nodo, int distancia) { if
+		 * (visitados.contains(nodo)) return; visitados.add(nodo);
+		 * System.out.println("Visitando nodo: " + nodo); for (Enlace e :
+		 * nodo.getEnlacesSalientes()) { Nodo destino = e.getDestino(); if
+		 * (!distancias.containsKey(destino) || distancias.get(destino) > distancia + 1)
+		 * { distancias.put(destino, distancia + 1); List<Nodo> pred = new
+		 * ArrayList<>(predecesores.get(nodo)); pred.add(destino);
+		 * predecesores.put(destino, pred); recorrer(distancias, predecesores,
+		 * visitados, destino, distancia + 1); } } }
+		 */
+
 		public List<Nodo> NodosCaminoMasCorto(Nodo n1, Nodo n2) {
 		    Map<Nodo, Integer> distancias = new HashMap<>();
 		    Map<Nodo, List<Nodo>> predecesores = new HashMap<>();
-		    
+		    Set<Nodo> visitados = new HashSet<>();
 		    distancias.put(n1, 0);
-		    List<Nodo> pred0 = new ArrayList<>();
-		    pred0.add(n1);
-		    predecesores.put(n1, pred0);
+		    predecesores.put(n1, new ArrayList<>(Arrays.asList(n1)));
 		    
-		    recorrer(distancias, predecesores, n1, 0);
-		    return predecesores.get(n2);
-		}
+		    Queue<Nodo> cola = new LinkedList<>();
+		    cola.add(n1);
+		    visitados.add(n1);
 
-		private void recorrer(Map<Nodo, Integer> distancias, Map<Nodo, List<Nodo>> predecesores, Nodo nodo, int distancia) {
-			Set<Enlace> hijos = nodo.getEnlacesSalientes();
-			if (hijos != null) {
-				for(Enlace e : hijos) {
-					Nodo destino = e.getDestino();
-					distancias.put(destino, distancia + 1);
-					List<Nodo> predn = new ArrayList<>(predecesores.get(nodo));
-					predn.add(destino);
-					predecesores.put(nodo, predn);
-					recorrer(distancias, predecesores, destino, distancia +1);
-				}	
-			}
-			
-			
+		    while (!cola.isEmpty()) {
+		        Nodo nodo = cola.poll();
+		        if (nodo.equals(n2)) {
+		            break;
+		        }
+
+		        Set<Enlace> hijos = nodo.getEnlacesSalientes();
+		        if (hijos != null) {
+		            for (Enlace e : hijos) {
+		                Nodo destino = e.getDestino();
+
+		                if (!visitados.contains(destino)) {
+		                    visitados.add(destino);
+		                    cola.add(destino);
+		                    if (!distancias.containsKey(destino) || distancias.get(destino) > distancias.get(nodo) + 1) {
+		                        distancias.put(destino, distancias.get(nodo) + 1);
+		                        List<Nodo> pred = new ArrayList<>(predecesores.get(nodo));
+		                        pred.add(destino);
+		                        predecesores.put(destino, pred);
+		                    }
+		                }
+		            }
+		        }
+		    }
+		    return predecesores.get(n2);
 		}
 		
 	
@@ -134,8 +173,52 @@ public class AnalizadorGrafos {
 		public boolean MejorRuta (Partida p) {
 			Nodo ini = nodos.get(p.getTurnos().get(0));
 			Nodo fin = nodos.get(p.getTurnos().get(p.getTurnos().size()-1));
-			return CaminoPartida(p).size() == EnlacesCaminoMasCorto(ini, fin).size();
+			return CaminoPartida(p).equals(EnlacesCaminoMasCorto(ini, fin));
 		}
+		
+		
+		public List<Nodo> mateEnNMovimientos(int N) {
+		    Nodo origen = nodos.get(Tablero.tableroBasico());
+		    Map<Nodo, Integer> distancias = new HashMap<>();
+		    Map<Nodo, List<Nodo>> predecesores = new HashMap<>();
+		    
+		    Queue<Nodo> cola = new LinkedList<>();
+		    cola.add(origen);
+		    distancias.put(origen, 0);
+		    predecesores.put(origen, new ArrayList<>(Arrays.asList(origen)));
+
+		    while (!cola.isEmpty()) {
+		        Nodo actual = cola.poll();
+		        int distanciaActual = distancias.get(actual);
+
+		        if (distanciaActual > N) {
+		            continue;
+		        }
+
+		        if (actual.getTablero().getMate()) {
+		            return predecesores.get(actual);
+		        }
+
+		        Set<Enlace> hijos = actual.getEnlacesSalientes();
+		        if (hijos != null) {
+		            for (Enlace e : hijos) {
+		                Nodo destino = e.getDestino();
+
+		                if (!distancias.containsKey(destino) || distancias.get(destino) > distanciaActual + 1) {
+		                    distancias.put(destino, distanciaActual + 1);
+		                    
+		                    List<Nodo> caminoHastaDestino = new ArrayList<>(predecesores.get(actual));
+		                    caminoHastaDestino.add(destino);
+		                    predecesores.put(destino, caminoHastaDestino);
+
+		                    cola.add(destino);
+		                }
+		            }
+		        }
+		    }
+		    return new ArrayList<>();
+		}
+
 		
 		public static void main(String[] args) throws Exception {
 			LectorPartidas lp = new LectorPartidas("data/partidas.txt");
@@ -144,8 +227,10 @@ public class AnalizadorGrafos {
 			LOGGER.info("El tiempo de análisis fue de: " + (System.currentTimeMillis() -t) + "ms");
 			LOGGER.info("El número de nodos del grafo es: " + ag.getNumeroNodos());
 			LOGGER.info("El nodo con más enlaces tiene: " + ag.getNodoMasEnlaces().getEnlaces().size());
-			Tablero t2 = new Tablero("rnbqk.nrppp..pbp...p..p.............p....PN.....PBPPPPPPR..QKBNR");
-			System.out.println(ag.NodosCaminoMasCorto(ag.nodos.get(Tablero.tableroBasico()), ag.nodos.get(t2)));
+
+			LOGGER.info("" + ag.mateEnNMovimientos(7));
+			//Tablero t2 = new Tablero("rnbqk.nrppp..pbp...p..p.............p....PN.....PBPPPPPPR..QKBNR");
+			//System.out.println(ag.EnlacesCaminoMasCorto(ag.nodos.get(Tablero.tableroBasico()), ag.nodos.get(t2)));
 			
 			
 			/*

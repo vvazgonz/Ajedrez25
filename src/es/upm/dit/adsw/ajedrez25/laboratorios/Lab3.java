@@ -46,9 +46,9 @@ public class Lab3 {
 				Tablero t2 = tableros.get(i+1);
 				
 				if (!nodos.containsKey(t1))
-					nodos.put(t1,new Nodo(tableros.get(i)));
+					nodos.put(t1,new Nodo(t1));
 				if (!nodos.containsKey(t2))
-					nodos.put(t2, new Nodo(tableros.get(i+1)));
+					nodos.put(t2, new Nodo(t2));
 				
 				Nodo n1 = nodos.get(t1);
 				Nodo n2 = nodos.get(t2);
