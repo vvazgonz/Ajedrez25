@@ -18,6 +18,7 @@ public class AnalizadorGrafos {
 		Set<Enlace> enlaces = new HashSet<Enlace>();
 		private int nNodos, nAristas = 0;
 		private PrintWriter logWriter;
+		Set<Nodo> mates = new HashSet<>();
 		
 		
 		
@@ -44,9 +45,14 @@ public class AnalizadorGrafos {
 					Nodo n1 = nodos.get(t1);
 					Nodo n2 = nodos.get(t2);
 					
-					Enlace e1 = n1.addEnlaceA(n2);
-		            n2.addEnlaceA(n1);
-		            enlaces.add(e1);
+					if (t1.getMate())
+						mates.add(n1);
+					if (t2.getMate())
+						mates.add(n2);
+					
+					Enlace e = n1.addEnlaceA(n2);
+		            n2.addEnlace(e);
+		            enlaces.add(e);
 				}
 			}
 			nNodos = nodos.size();
@@ -177,26 +183,28 @@ public class AnalizadorGrafos {
 		}
 		
 		
-		public List<Nodo> mateEnNMovimientos(int N) {
-		    Nodo origen = nodos.get(Tablero.tableroBasico());
+		public List<Nodo> mateEnNMovimientos(Tablero t, int n) {
+		    Nodo origen = nodos.get(t);
 		    Map<Nodo, Integer> distancias = new HashMap<>();
 		    Map<Nodo, List<Nodo>> predecesores = new HashMap<>();
 		    
 		    Queue<Nodo> cola = new LinkedList<>();
 		    cola.add(origen);
 		    distancias.put(origen, 0);
-		    predecesores.put(origen, new ArrayList<>(Arrays.asList(origen)));
+		    predecesores.put(origen, new ArrayList<>());
 
 		    while (!cola.isEmpty()) {
 		        Nodo actual = cola.poll();
 		        int distanciaActual = distancias.get(actual);
 
-		        if (distanciaActual > N) {
+		        if (distanciaActual > n) {
 		            continue;
 		        }
 
-		        if (actual.getTablero().getMate()) {
-		            return predecesores.get(actual);
+		        if (mates.contains(actual)) {
+		        	List<Nodo> ret = new ArrayList<>(predecesores.get(actual));
+		        	Collections.reverse(ret);
+		            return ret;
 		        }
 
 		        Set<Enlace> hijos = actual.getEnlacesSalientes();
@@ -216,7 +224,7 @@ public class AnalizadorGrafos {
 		            }
 		        }
 		    }
-		    return new ArrayList<>();
+		    return null;
 		}
 
 		
@@ -227,10 +235,8 @@ public class AnalizadorGrafos {
 			LOGGER.info("El tiempo de análisis fue de: " + (System.currentTimeMillis() -t) + "ms");
 			LOGGER.info("El número de nodos del grafo es: " + ag.getNumeroNodos());
 			LOGGER.info("El nodo con más enlaces tiene: " + ag.getNodoMasEnlaces().getEnlaces().size());
-
-			LOGGER.info("" + ag.mateEnNMovimientos(7));
-			//Tablero t2 = new Tablero("rnbqk.nrppp..pbp...p..p.............p....PN.....PBPPPPPPR..QKBNR");
-			//System.out.println(ag.EnlacesCaminoMasCorto(ag.nodos.get(Tablero.tableroBasico()), ag.nodos.get(t2)));
+			Tablero ta = Tablero.tableroBasico();
+			LOGGER.info("sexo: \n" + ag.mateEnNMovimientos(ta, 100).size());
 			
 			
 			/*

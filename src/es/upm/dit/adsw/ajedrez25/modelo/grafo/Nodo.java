@@ -53,6 +53,11 @@ public class Nodo {
         enlaces.add(e);
         return e;
     }
+    
+    public void addEnlace(Enlace e) {
+    	if (e.getOrigen().equals(this) || e.getDestino().equals(this))
+    		enlaces.add(e);
+    }
 
     public int getGradoEntrada() {
         return getEnlacesEntrantes().size();
