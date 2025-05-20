@@ -59,6 +59,13 @@ public class AnalizadorGrafos {
 			nAristas = enlaces.size();
 		}
 		
+		public Map<Tablero, Nodo> getNodos() {
+			return nodos;
+		}
+		
+		public Set<Enlace> getEnlaces() {
+			return enlaces;
+		}
 		
 		public int getNumeroNodos() {
 			return nNodos;
